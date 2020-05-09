@@ -14,7 +14,7 @@ let resMessage = require('../modules/responseMessage');
     RESPONSE DATA : User ID
 */
 
-// 2단계
+// 3단계
 router.post('/signup', async (req, res) => {
     const {
         id,
@@ -22,17 +22,18 @@ router.post('/signup', async (req, res) => {
         password,
         email
     } = req.body;
-    // request data 확인 - 없다면 Bad Request 반환
+
+    // request data 확인 - 없다면 Null Value 반환
     if (!id || !name || !password || !email) {
-        return res.status(400).send({
-            message: 'BAD REQUEST'
-        });
+        res.status(statusCode.BAD_REQUEST)
+            .send(util.fail(statusCode.BAD_REQUEST, resMessage.NULL_VALUE));
+        return;
     }
     //already ID
     if (User.filter(user => user.id == id).length > 0) {
-        return res.status(400).send({
-            message: 'ALREADY ID'
-        });
+        res.status(statusCode.BAD_REQUEST)
+            .send(util.fail(statusCode.BAD_REQUEST, resMessage.ALREADY_ID));
+        return;
     }
     User.push({
         id,
@@ -40,7 +41,10 @@ router.post('/signup', async (req, res) => {
         password,
         email
     });
-    res.status(200).send(User);
+    res.status(statusCode.OK)
+        .send(util.success(statusCode.OK, resMessage.CREATED_USER, {
+            userId: id
+        }));
 });
 
 module.exports = router;

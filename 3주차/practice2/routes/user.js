@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 let User = require('../models/user');
+let util = require('../modules/util');
+let statusCode = require('../modules/statusCode');
+let resMessage = require('../modules/responseMessage');
 
 /* 
     ✔️ sign up
@@ -11,7 +14,7 @@ let User = require('../models/user');
     RESPONSE DATA : User ID
 */
 
-//1 단계
+// 2단계
 router.post('/signup', async (req, res) => {
     const {
         id,
@@ -19,6 +22,18 @@ router.post('/signup', async (req, res) => {
         password,
         email
     } = req.body;
+    // request data 확인 - 없다면 Bad Request 반환
+    if (!id || !name || !password || !email) {
+        return res.status(400).send({
+            message: 'BAD REQUEST'
+        });
+    }
+    //already ID
+    if (User.filter(user => user.id == id).length > 0) {
+        return res.status(400).send({
+            message: 'ALREADY ID'
+        });
+    }
     User.push({
         id,
         name,
